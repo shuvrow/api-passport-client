@@ -13,6 +13,7 @@
 
 use Illuminate\Http\Request;
 
+#using client secret to retrive information
 Route::get('/', function () {
     $query = http_build_query([
         'client_id' => 12,
@@ -38,10 +39,58 @@ Route::get('/callback', function (Request $request) {
         ],
     ]);
 
-    json_decode((string) $response->getBody(),true);
+   $data= json_decode((string) $response->getBody(),true);
 
+    $access_token=$data['access_token'];
+    $response = $http->get('http://localhost:8000/api/user', [
+        'headers' => [
+            'Accept' => 'application/json',
+            'Authorization' => 'Bearer '.$access_token,
+        ],
+    ]);
 
+    dd(json_decode((string) $response->getBody(),true));
 });
+
+
+#Password Grant Clients
+#create password grant clients
+# run following command
+#php artisan passport:client --password
+#name : shuvrow
+
+
+/*Route::get('client', function () {
+    $query = http_build_query([
+        'client_id' => 16,
+        'redirect_uri' => 'http://localhost:9000/token/email',
+        'response_type' => 'code',
+        'scope' => '',
+    ]);
+
+    return redirect('http://localhost:8000/oauth/authorize?'.$query);
+});
+
+Route::get('token/email',function(){
+
+    $http = new GuzzleHttp\Client;
+
+    $response = $http->post('http://localhost:8000/oauth/token', [
+        'form_params' => [
+            'grant_type' => 'password',
+            'client_id' => 16,
+            'client_secret' => '9rfP06MjtWyo3ilzMZJytAlrNhYjOJcRYQRslfQS',
+            'username' => 'shuvrow@yahoo.com',
+            'password' => 'shuvrow',
+            'scope' => '*',
+        ],
+    ]);
+
+    return json_decode((string) $response->getBody(), true);
+});*/
+
+
+# access token to retrive information in API
 
 Route::get('users',function(){
     $http = new GuzzleHttp\Client;
